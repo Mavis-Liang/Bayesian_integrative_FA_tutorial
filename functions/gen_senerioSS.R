@@ -56,6 +56,6 @@ gen_senerioSS <- function(S, N, P, Q, K, genPhi = "dense"){
     Y_list[[s]] <- Y_mat[which(A[,s]==1),]
   }
   
-  return(list(Y_mat=Y_mat, Y_list=Y_list, A=A, X=X, Beta=Beta, Phi=Phi, Psi=Psi))
+  return(list(Y_mat=Y_mat, Y_list=Y_list, n_s=n_s, A=A, X=X, Beta=Beta, Phi=Phi, Psi=Psi))
 }
 
