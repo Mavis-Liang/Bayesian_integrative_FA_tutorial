@@ -18,7 +18,7 @@ covPhi_sen1_dense <- tcrossprod(Phi_sen1_dense)
 
 # Load estimated data
 data_sen1_dense_MOMSS <- readRDS("./RDS/result_MOMSS_sen1_dense.rds")
-Phi_sen1_dense_MOMSS <- data_sen1_dense_MOMSS$M
+Phi_sen1_dense_MOMSS <- data_sen1_dense_MOMSS$M## Un-scaled, thus wrong
 covPhi_sen1_dense_MOMSS <- tcrossprod(Phi_sen1_dense_MOMSS)
 data_sen1_dense_BMSFA <- readRDS("./RDS/result_BMSFA_sen1_dense.rds")
 covPhi_sen1_dense_BMSFA <- data_sen1_dense_BMSFA$SigmaPhi
@@ -134,7 +134,7 @@ p2 <- sen1_dense %>% as.data.frame() %>%
 
 # boxplot - RV of Phi
 p3 <- sen1_dense %>% as.data.frame() %>% 
-  select(RV_MOMSS_Phi, RV_BMSFA_Phi) %>% 
+  dplyr::select(RV_MOMSS_Phi, RV_BMSFA_Phi) %>% 
   rename_with(~ gsub("RV_(.*)_Phi", "\\1", .x), everything()) %>% 
   pivot_longer(everything(), names_to = "method", values_to = "value") %>%
   unnest(value) %>%
