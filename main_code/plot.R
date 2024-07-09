@@ -1,14 +1,24 @@
-# Figures
-# Heatmap for cross-product of matrix Phi (true vs estimated)
-
 # Load libraries
 library(ggplot2)
 library(reshape2)
 library(latex2exp)
 library(gridExtra)
 library(tidyverse)
+source("./functions/plot_metrics.R")
 
 
+##################### Summaries (box plots) for simulations ####################
+##################### Senerio 1: Dense ###################
+sen1_dense <- readRDS("./RDS/sen1_dense_7.9.rds")
+plot_metrics(sen1_dense)
+##################### Senerio 1: Sparse ###################
+sen1_sparse <- readRDS("./RDS/sen1_sparse_7.9.rds")
+plot_metrics(sen1_sparse)
+
+
+
+
+# Heatmap for cross-product of matrix Phi (true vs estimated)
 ################# Senerio 1: Dense ###################
 
 # Load true data
@@ -98,102 +108,3 @@ p3 <- ggplot(data = melt(covPhi_sen1_sparse_BMSFA), aes(x = Var1, y = Var2, fill
         text = element_text(size=10))
 
 grid.arrange(p1, p2, p3, ncol=3)
-
-
-##################### Summaries (box plots) for simulations ####################
-##################### Senerio 1: Dense ###################
-# Load data
-sen1_dense <- readRDS("./RDS/sen1_dense.rds")
-# boxplot - runtime
-p1 <- sen1_dense %>% as.data.frame() %>% 
-  select(run_time_MOMSS, run_time_BMSFA) %>% 
-  rename_with(~ gsub("run_time_", "", .x), everything()) %>% 
-  pivot_longer(everything(), names_to = "method", values_to = "value") %>%
-  unnest(value) %>%
-  ggplot(aes(x = method, y = value)) +
-  geom_boxplot() +
-  labs(title = "Runtime comparison (dense)") +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(size=10))+
-  labs(x = "Method", y = "Runtime (seconds)")
-
-# boxplot - peak_RAM
-p2 <- sen1_dense %>% as.data.frame() %>% 
-  select(peak_RAM_MOMSS, peak_RAM_BMSFA) %>% 
-  rename_with(~ gsub("peak_RAM_", "", .x), everything()) %>% 
-  pivot_longer(everything(), names_to = "method", values_to = "value") %>%
-  unnest(value) %>%
-  ggplot(aes(x = method, y = value)) +
-  geom_boxplot() +
-  labs(title = "Peak RAM comparison (dense)") +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(size=10))+
-  labs(x = "Method", y = "Peak RAM (MB)")
-
-# boxplot - RV of Phi
-p3 <- sen1_dense %>% as.data.frame() %>% 
-  dplyr::select(RV_MOMSS_Phi, RV_BMSFA_Phi) %>% 
-  rename_with(~ gsub("RV_(.*)_Phi", "\\1", .x), everything()) %>% 
-  pivot_longer(everything(), names_to = "method", values_to = "value") %>%
-  unnest(value) %>%
-  ggplot(aes(x = method, y = value)) +
-  geom_boxplot() +
-  ggtitle(TeX("RV of $\\Phi\\Phi^T$ (dense)\\ comparison")) +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(size=10))+
-  labs(x = "Method", y = "RV")
-
-grid.arrange(p1, p2, p3, ncol=3)
-
-
-##################### Senerio 2: Sparse ###################
-# Load data
-sen1_sparse <- readRDS("./RDS/sen1_sparse.rds")
-# boxplot - runtime
-p1 <- sen1_sparse %>% as.data.frame() %>% 
-  select(run_time_MOMSS, run_time_BMSFA) %>% 
-  rename_with(~ gsub("run_time_", "", .x), everything()) %>% 
-  pivot_longer(everything(), names_to = "method", values_to = "value") %>%
-  unnest(value) %>%
-  ggplot(aes(x = method, y = value)) +
-  geom_boxplot() +
-  labs(title = "Runtime comparison (sparse)") +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(size=10))+
-  labs(x = "Method", y = "Runtime (seconds)")
-
-# boxplot - peak_RAM
-p2 <- sen1_sparse %>% as.data.frame() %>% 
-  select(peak_RAM_MOMSS, peak_RAM_BMSFA) %>% 
-  rename_with(~ gsub("peak_RAM_", "", .x), everything()) %>% 
-  pivot_longer(everything(), names_to = "method", values_to = "value") %>%
-  unnest(value) %>%
-  ggplot(aes(x = method, y = value)) +
-  geom_boxplot() +
-  labs(title = "Peak RAM comparison (sparse)") +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(size=10))+
-  labs(x = "Method", y = "Peak RAM (MB)")
-
-# boxplot - RV of Phi
-p3 <- sen1_sparse %>% as.data.frame() %>% 
-  select(RV_MOMSS_Phi, RV_BMSFA_Phi) %>% 
-  rename_with(~ gsub("RV_(.*)_Phi", "\\1", .x), everything()) %>% 
-  pivot_longer(everything(), names_to = "method", values_to = "value") %>%
-  unnest(value) %>%
-  ggplot(aes(x = method, y = value)) +
-  geom_boxplot() +
-  ggtitle(TeX("RV of $\\Phi\\Phi^T$ (sparse) comparison")) +
-  theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5),
-        text = element_text(size=10))+
-  labs(x = "Method", y = "RV")
-
-grid.arrange(p1, p2, p3, ncol=3)
-
-
