@@ -1,0 +1,238 @@
+---
+title: "Simulations"
+format: pdf
+editor: visual
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Model
+
+For each study $s = 1, \cdots, S$, we have observations $i = 1, \cdots, n_s$. Each observation has $p=1,\cdots,P$ characteristics (for example, gene expressions).
+
+**MOM-SS**
+
+$$
+Y = A\alpha^{\top} + X\beta^{\top} + F\Phi^{\top} + E
+$$
+
+where
+
+$$
+A=\begin{bmatrix}
+\mathbb{1}_{n_1} & 0 & \cdots & 0\\
+0 & \mathbb{1}_{n_2} & \cdots & 0\\
+\vdots & 0 & \cdots & 0\\
+0 & 0 & \cdots & \mathbb{1}_{n_S}
+\end{bmatrix},\quad
+\alpha^{\top} = \begin{bmatrix}
+\alpha_{11} & \cdots & \alpha_{P1}\\
+\vdots & \ddots & \vdots\\
+\alpha_{1S} & \cdots & \alpha_{PS}
+\end{bmatrix}
+$$
+
+**BMSFA model**
+
+$$
+Y = F\Phi^{\top} + L\Lambda^{\top} + E
+$$
+
+where
+
+$$
+L = \text{diag}(L_1, \cdots, L_{M_s}),\quad \Lambda = \text{diag}(\Lambda_1, \cdots, \Lambda_S)
+$$
+
+$$
+L_s = \begin{bmatrix} 
+l_{1s} & \cdots &l_{1Ms} \\
+\vdots & \ddots & \vdots \\
+l_{n_s1} & \cdots & l_{n_sM_s}
+\end{bmatrix},\quad
+\Lambda_s = \begin{bmatrix}
+\lambda_{11} & \cdots & \lambda_{1M_s}\\
+\vdots & \ddots & \vdots\\
+\lambda_{P1} & \cdots & \lambda_{PM_s}
+\end{bmatrix}
+$$
+
+## Installing packages
+
+```{r}
+# install.packages("remotes")
+# remotes::install_github("rdevito/MSFA")
+library(MSFA)
+
+#install.packages("devtools") 
+#library(devtools)
+#devtools::install_github("AleAviP/BFR.BE")
+library(BFR.BE)
+
+# Other packages
+library(tidyverse)
+#library(matlab)
+library(MatrixCorrelation)
+
+# My own version of MSFA
+library(devtools)
+load_all("../MSFA")
+#devtools::install("./MSFA")
+```
+
+```{r echo=FALSE}
+# Functions to generate the data
+source("../functions/gen_senerioSS.R")
+source("../functions/calculateRV.R")
+```
+
+## Senerio 1: 4 studies/batches (S=4), 500 total samples (N=500), 50 genes expressions/nutrition (P=50), 2 known covariates(Q=2), 5 common latent factors(K=5).
+
+### Data Generation
+
+```{r}
+# Instantiate the data
+set.seed(5)
+data_sen1 <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5, genPhi = "dense")
+saveRDS(data_sen1, "../RDS/data_sen1_dense.rds")
+
+sen1_Y_mat <- data_sen1$Y_mat
+sen1_A <- data_sen1$A
+sen1_X <- data_sen1$X
+sen1_Y_list <- data_sen1$Y_list
+```
+
+```{r, eval=FALSE}
+# Do not run it again.
+#Fit the MOM-SS model
+set.seed(10)
+result_MOMSS_sen1 <- BFR.BE.EM.CV(x = sen1_Y_mat, v = sen1_X, 
+                                  b = sen1_A, q = 5, scaling = FALSE)
+#Fit the BMSFA model
+result_BMSFA_sen1 <- sp_msfa(sen1_Y_list, k = 5, j_s = c(1,1,1,1), scaling = FALSE,
+                             control = list(nrun = 2000, burn = 1000),
+                             outputlevel = 3)
+saveRDS(result_MOMSS_sen1, "../RDS/result_MOMSS_sen1_dense.rds")
+saveRDS(result_BMSFA_sen1, "../RDS/result_BMSFA_sen1_dense.rds")
+```
+
+### Results:
+
+#### $\Phi$
+
+```{r}
+RV(result_MOMSS_sen1$M, data_sen1$Phi)
+RV(result_BMSFA_sen1$SigmaPhi, tcrossprod(data_sen1$Phi))
+RV(result_MOMSS_sen1$M, data_sen1$Phi)
+calculateRV(result_BMSFA_sen1$SigmaPhi, tcrossprod(data_sen1$Phi))
+frobenius.norm(tcrossprod(result_MOMSS_sen1$M)-tcrossprod(data_sen1$Phi))
+frobenius.norm(result_BMSFA_sen1$SigmaPhi - tcrossprod(data_sen1$Phi))
+```
+
+#### $\Psi$
+
+```{r}
+# RV and FN for Psi_s
+# coeffRV(result_MOMSS_sen1$sigma, data_sen1$Psi)
+frobenius.norm(result_MOMSS_sen1$sigma - data_sen1$Psi)
+coeffRV(result_BMSFA_sen1$SigmaPsi, data_sen1$Psi)$rv
+```
+
+#### $\Sigma_s$
+
+```{r, echo=FALSE}
+# Compare the results with heatmap using ggplot
+# true values of Phi
+Phi %>% as.data.frame() %>% 
+  mutate(row = row_number()) %>%
+  pivot_longer(-row, names_to = "col", values_to = "Phi") %>%
+  ggplot(aes(col, row, fill=Phi))+
+  geom_tile(aes(fill = Phi)) +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "blue", midpoint = 0) +
+  theme_minimal()  +
+  labs(y="pth characteristic", x="kth phi") +
+  ggtitle("True values of Phi")
+```
+
+```{r, echo=FALSE}
+result_MOMSS_sen1$M%>% as.data.frame() %>% 
+  mutate(row = row_number()) %>%
+  pivot_longer(-row, names_to = "col", values_to = "Phi") %>%
+  ggplot(aes(col, row, fill=Phi))+
+  geom_tile(aes(fill = Phi)) +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "blue", midpoint = 0) +
+  theme_minimal()  +
+  labs(y="pth characteristic", x="kth phi") +
+  ggtitle("MOM-SS estimate of Phi")
+```
+
+## Senerio 2: 2 studies/batches (S=4), 50 samples(N=500), 1000 genes expressions (P=50), no known covariates, 5 common latent factors(K=5), each study has 1 study-specific factors ($J_s=(1,1,1,1)$) , respectivtly.
+
+```{r}
+source("../functions/gen_senerioBMSFA.R")
+# Instantiate the data
+data_sen2 <- gen_senerioBMSFA(S=4, N=500, P=50, K=5, j_s=c(1,1,1,1), 
+                              genPhi = "sparse", genLambda = "sparse")
+sen2_Y_mat <- data_sen2$Y_mat
+sen2_A <- data_sen2$A
+sen2_Y_list <- data_sen2$Y_list
+```
+
+```{r, eval=FALSE}
+set.seed(10)
+# Fit MOM-SS model
+result_MOMSS_sen2 <- BFR.BE.EM.CV(x = sen2_Y_mat, 
+                                  b = sen2_A, q = 5, scaling = FALSE)
+#Fit the BMSFA model
+result_BMSFA_sen2 <- sp_msfa(sen2_Y_list, k = 5, 
+                             j_s = c(1, 1, 1, 1), trace = FALSE, scaling = FALSE,
+                             control = list(nrun = 2000, burn = 1000),
+                             outputlevel = 3)
+```
+
+### Results:
+
+#### $\Phi$
+
+```{r}
+RV(result_MOMSS_sen2$M, data_sen2$Phi)
+RV(result_BMSFA_sen2$SigmaPhi, tcrossprod(data_sen2$Phi))
+RV(result_MOMSS_sen2$M, data_sen2$Phi)
+calculateRV(result_BMSFA_sen2$SigmaPhi, tcrossprod(data_sen2$Phi))
+frobenius.norm(tcrossprod(result_MOMSS_sen1$M)-tcrossprod(data_sen1$Phi))
+frobenius.norm(result_BMSFA_sen1$SigmaPhi - tcrossprod(data_sen1$Phi))
+```
+
+#### Plots
+
+```{r, echo=FALSE}
+result_MOMSS_sen2 <- readRDS("result_MOMSS_sen2.rds")
+```
+
+```{r, echo=FALSE}
+# Compare the results with heatmap using ggplot
+# TRUE Phi
+Phi %>% as.data.frame() %>% 
+  mutate(row = row_number()) %>%
+  pivot_longer(-row, names_to = "col", values_to = "Phi") %>%
+  ggplot(aes(col, row, fill=Phi))+
+  geom_tile(aes(fill = Phi)) +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "blue", midpoint = 0) +
+  theme_minimal()  +
+  labs(y="pth characteristic", x="kth phi") +
+  ggtitle("True values of Phi")
+```
+
+```{r, echo=FALSE}
+result_MOMSS_sen2$M%>% as.data.frame() %>% 
+  mutate(row = row_number()) %>%
+  pivot_longer(-row, names_to = "col", values_to = "Phi") %>%
+  ggplot(aes(col, row, fill=Phi))+
+  geom_tile(aes(fill = Phi)) +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "blue", midpoint = 0) +
+  theme_minimal()  +
+  labs(y="pth characteristic", x="kth phi") +
+  ggtitle("MOM-SS estimate of Phi")
+```
