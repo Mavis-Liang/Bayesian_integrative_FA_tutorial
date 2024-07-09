@@ -34,11 +34,11 @@ gen_BMSFA_MSE <- function(sim_data, BMSFA_result){
 
 est_perform <- function(true_data, result_BMSFA, result_MOMSS){
   # Scale MOMSS's M
-  MOMSS_Phi_scaled <- scale(result_MOMSS$M)
+  MOMSS_Phi <- result_MOMSS$M
   # MOMSS
-  RV_MOMSS_Phi <- RV(MOMSS_Phi_scaled, true_data$Phi)
-  FN_MOMSS_Phi <- frobenius.norm(tcrossprod(MOMSS_Phi_scaled) - tcrossprod(true_data$Phi))
-  RV_MOMSS_SigmaPhi <- calculateRV(tcrossprod(MOMSS_Phi_scaled), tcrossprod(true_data$Phi))
+  RV_MOMSS_Phi <- RV(MOMSS_Phi, true_data$Phi)
+  FN_MOMSS_Phi <- frobenius.norm(tcrossprod(MOMSS_Phi) - tcrossprod(true_data$Phi))
+  RV_MOMSS_SigmaPhi <- calculateRV(tcrossprod(MOMSS_Phi), tcrossprod(true_data$Phi))
   MSE_MOMSS <- gen_MOMSS_MSE(true_data, result_MOMSS)
   
   # BMSFA
