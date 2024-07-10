@@ -32,7 +32,7 @@ gen_BMSFA_MSE <- function(sim_data, BMSFA_result){
   return(mean((sim_data$Y_mat - est_Y)^2))
 }
 
-est_perform <- function(true_data, result_BMSFA, result_MOMSS){
+est_perform <- function(true_data, result_BMSFA, result_MOMSS, result_PFA){
   # Scale MOMSS's M
   MOMSS_Phi <- result_MOMSS$M
   # MOMSS
@@ -48,7 +48,7 @@ est_perform <- function(true_data, result_BMSFA, result_MOMSS){
   MSE_BMSFA <- gen_BMSFA_MSE(true_data, result_BMSFA)
   
   # PFA
-  #RV_PFA_SigmaPhi <- calculateRV(result_PFA$SigmaPhi, tcrossprod(true_data$Phi))
+  RV_PFA_SigmaPhi <- calculateRV(result_PFA$est_SigmaPhi, tcrossprod(true_data$Phi))
   # Output
   return(list(RV_MOMSS_Phi=RV_MOMSS_Phi,
               FN_MOMSS_Phi = FN_MOMSS_Phi,
@@ -56,7 +56,7 @@ est_perform <- function(true_data, result_BMSFA, result_MOMSS){
               FN_BMSFA_Phi = FN_BMSFA_Phi,
               RV_MOMSS_SigmaPhi = RV_MOMSS_SigmaPhi,
               RV_BMSFA_SigmaPhi = RV_BMSFA_SigmaPhi,
-              #RV_PFA_SigmaPhi = RV_PFA_SigmaPhi,
+              RV_PFA_SigmaPhi = RV_PFA_SigmaPhi,
               MSE_MOMSS = MSE_MOMSS,
               MSE_BMSFA = MSE_BMSFA))
 }
