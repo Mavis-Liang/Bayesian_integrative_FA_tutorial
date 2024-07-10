@@ -18,39 +18,42 @@ cl <- makeCluster(numCores - 3)
 registerDoParallel(cl)
 
 ###############################Senerio 1 Dense Phi##############################
-sen1_dense <- foreach(i = 1:50, .combine = 'rbind',
+sen1_dense <- foreach(i = 1:1, .combine = 'rbind',
                    .packages = packages) %dopar% {
-  
                                    data_sen1 <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5)
                                    results <- fitting(data_sen1)
 
                                    # RV and FN for Phi
-                                    metrices <- est_perform(data_sen1, results$result_BMSFA, results$result_MOMSS)
+                                    metrices <- est_perform(data_sen1, results$result_BMSFA, results$result_MOMSS, results$result_PFA)
                                    # Computing performance
-                                    comp_metrices <- computing_perform(results[c("profile_MOMSS", "profile_BMSFA")])
+                                    comp_metrices <- computing_perform(results[c("profile_MOMSS", "profile_BMSFA", "profile_PFA")])
 
                                    # Output
                                    c(metrices, comp_metrices)
                                  }
 saveRDS(sen1_dense, "./sen1_dense.rds")
+# Stop the parallel backend after the job is done
+stopImplicitCluster()
 ###############################################################################
 
 ##########################Senerio 1 Sparse Phi#################################
+registerDoParallel(cl)
 sen1_sparse <- foreach(i = 1:50, .combine = 'rbind', 
                       .packages = packages) %dopar% {
                                       data_sen1 <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5, genPhi = "sparse")
                                       results <- fitting(data_sen1)
                                       
                                       # RV and FN for Phi
-                                      metrices <- est_perform(data_sen1, results$result_BMSFA, results$result_MOMSS)
+                                      metrices <- est_perform(data_sen1, results$result_BMSFA, results$result_MOMSS, results$result_PFA)
                                       # Computing performance
-                                      comp_metrices <- computing_perform(results[c("profile_MOMSS", "profile_BMSFA")])
+                                      comp_metrices <- computing_perform(results[c("profile_MOMSS", "profile_BMSFA", "profile_PFA")])
                                       
                                       # Output
                                       c(metrices, comp_metrices)
                                     }
 saveRDS(sen1_sparse, "./sen1_sparse.rds")
-###############################################################################
-
 # Stop the parallel backend after the job is done
 stopImplicitCluster()
+###############################################################################
+
+

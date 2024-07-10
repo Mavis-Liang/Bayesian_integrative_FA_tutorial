@@ -28,28 +28,28 @@ fitting <- function(sim_data){
     result_MOMSS <- BFR.BE.EM.CV(x = Y_mat, v = X, 
                                       b = A, q = 5, scaling = FALSE)
   })
-  # profile_PFA <- peakRAM({
+   profile_PFA <- peakRAM({
   #   #Fit the PFA model
-  #   result_PFA <- PFA(t(Y_mat), grpind = rep(1:length(n_s), times = n_s), ini.PCA = T)
-  # })
+     fit_PFA <- PFA(t(Y_mat), grpind = rep(1:length(n_s), times = n_s), ini.PCA = T)
+   })
   return(list(result_MOMSS = result_MOMSS, result_BMSFA = post_BMSFA(result_BMSFA),
-              #result_PFA = post_PFA(result_PFA),
-              profile_MOMSS = profile_MOMSS, profile_BMSFA = profile_BMSFA
-              #profile_PFA = profile_PFA
+              result_PFA = post_PFA(fit_PFA),
+              profile_MOMSS = profile_MOMSS, profile_BMSFA = profile_BMSFA,
+              profile_PFA = profile_PFA
               ))
 }
 
 ################################# Example ###########################
 # set.seed(6)
 # sim_data_test <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5)
-# result_test <- fitting(sim_data_test)
+#result_test <- fitting(sim_data_test)
 # # 
 # # gen_MOMSS_MSE(sim_data_test, result_test$result_MOMSS)
 # # 
 # # gen_BMSFA_MSE(sim_data_test, result_test$result_BMSFA)
 # # 
-# est_perform(sim_data_test, result_test$result_BMSFA, result_test$result_MOMSS)
-# # computing_perform(result_test[c("profile_MOMSS", "profile_BMSFA")])
+#est_perform(sim_data_test, result_test$result_BMSFA, result_test$result_MOMSS, result_test$result_PFA)
+#computing_perform(result_test[c("profile_MOMSS", "profile_BMSFA", "profile_PFA")])
 # fit <- PFA(t(sim_data_test$Y_mat), grpind = rep(1:length(sim_data_test$n_s), times = sim_data_test$n_s), ini.PCA = T)
 # SigmaPhi <- post_PFA(fit)
 # fields::image.plot(t(lambdap))
