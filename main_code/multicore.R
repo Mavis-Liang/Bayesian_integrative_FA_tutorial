@@ -31,6 +31,7 @@ sen1_dense <- foreach(i = 1:50, .combine = 'rbind',
                      source("./functions/post_PFA.R")
                      source("./functions/measurements.R")
                      source("./functions/post_SUFA.R")
+                     source("./functions/sim_once.R")
                                    data_sen1 <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5)
                                    results <- fitting(data_sen1)
 
