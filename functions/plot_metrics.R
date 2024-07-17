@@ -10,7 +10,7 @@ plot_metrics <- function(multicore_output) {
   
   # Boxplot - runtime
   p1 <- df %>% 
-    select(run_time_profile_MOMSS, run_time_profile_BMSFA) %>% 
+    dplyr::select(run_time_profile_MOMSS, run_time_profile_BMSFA) %>% 
     rename_with(~ gsub("run_time_profile_", "", .x), everything()) %>% 
     pivot_longer(everything(), names_to = "method", values_to = "value") %>%
     unnest(value) %>%
@@ -24,7 +24,7 @@ plot_metrics <- function(multicore_output) {
   
   # Boxplot - peak_RAM
   p2 <- df %>% 
-    select(peak_RAM_profile_MOMSS, peak_RAM_profile_BMSFA) %>% 
+    dplyr::select(peak_RAM_profile_MOMSS, peak_RAM_profile_BMSFA) %>% 
     rename_with(~ gsub("peak_RAM_profile_", "", .x), everything()) %>% 
     pivot_longer(everything(), names_to = "method", values_to = "value") %>%
     unnest(value) %>%
@@ -38,7 +38,7 @@ plot_metrics <- function(multicore_output) {
   
   # Boxplot - RV of Phi
   p3 <- df %>% 
-    select(RV_MOMSS_Phi, RV_BMSFA_Phi) %>% 
+    dplyr::select(RV_MOMSS_Phi, RV_BMSFA_Phi) %>% 
     rename_with(~ gsub("RV_(.*)_Phi", "\\1", .x), everything()) %>% 
     pivot_longer(everything(), names_to = "method", values_to = "value") %>%
     unnest(value) %>%
@@ -52,7 +52,7 @@ plot_metrics <- function(multicore_output) {
   
   # Boxplot - FN of Phi
   p4 <- df %>% 
-    select(FN_MOMSS_Phi, FN_BMSFA_Phi) %>% 
+    dplyr::select(FN_MOMSS_Phi, FN_BMSFA_Phi) %>% 
     rename_with(~ gsub("FN_(.*)_Phi", "\\1", .x), everything()) %>% 
     pivot_longer(everything(), names_to = "method", values_to = "value") %>%
     unnest(value) %>%
@@ -66,7 +66,7 @@ plot_metrics <- function(multicore_output) {
   
   # Boxplot - RV of Sigma Phi
   p5 <- df %>% 
-    select(RV_MOMSS_SigmaPhi, RV_BMSFA_SigmaPhi) %>% 
+    dplyr::select(RV_MOMSS_SigmaPhi, RV_BMSFA_SigmaPhi) %>% 
     rename_with(~ gsub("RV_(.*)_SigmaPhi", "\\1", .x), everything()) %>% 
     pivot_longer(everything(), names_to = "method", values_to = "value") %>%
     unnest(value) %>%
@@ -80,7 +80,7 @@ plot_metrics <- function(multicore_output) {
   
   # Boxplot - MSE
   p6 <- df %>% 
-    select(MSE_MOMSS, MSE_BMSFA) %>% 
+    dplyr::select(MSE_MOMSS, MSE_BMSFA) %>% 
     rename_with(~ gsub("MSE_", "", .x), everything()) %>% 
     pivot_longer(everything(), names_to = "method", values_to = "value") %>%
     unnest(value) %>%
