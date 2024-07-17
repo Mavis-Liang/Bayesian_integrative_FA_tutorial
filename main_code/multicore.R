@@ -15,7 +15,7 @@ cl <- makeCluster(numCores - 3)
 registerDoParallel(cl)
 
 ###############################Senerio 1 Dense Phi##############################
-sen1_dense <- foreach(i = 1:2, .combine = 'rbind',
+sen1_dense <- foreach(i = 1:50, .combine = 'rbind',
                       # "QiupC" is cpp function sourced in PFA.R, and should be import separately.
                    .packages = packages, .noexport = c("QiupC")) %dopar% {
                      # Source C++ functions
