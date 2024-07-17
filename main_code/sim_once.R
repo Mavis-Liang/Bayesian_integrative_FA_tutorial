@@ -55,16 +55,16 @@ fitting <- function(sim_data){
 }
 
 ################################# Example ###########################
-set.seed(6)
-sim_data_test <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5)
-result_test <- fitting(sim_data_test)
-# # 
-gen_MOMSS_MSE(sim_data_test, result_test$result_MOMSS)
-# # 
-gen_BMSFA_MSE(sim_data_test, result_test$result_BMSFA)
-# # 
-est_perform(sim_data_test, result_test)
-computing_perform(result_test[c("profile_MOMSS", "profile_BMSFA", "profile_PFA", "profile_SUFA")])
+# set.seed(6)
+# sim_data_test <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5)
+# result_test <- fitting(sim_data_test)
+# # # 
+# gen_MOMSS_MSE(sim_data_test, result_test$result_MOMSS)
+# # # 
+# gen_BMSFA_MSE(sim_data_test, result_test$result_BMSFA)
+# # # 
+# est_perform(sim_data_test, result_test)
+# computing_perform(result_test[c("profile_MOMSS", "profile_BMSFA", "profile_PFA", "profile_SUFA")])
 # fit <- PFA(t(sim_data_test$Y_mat), grpind = rep(1:length(sim_data_test$n_s), times = sim_data_test$n_s), ini.PCA = T)
 # SigmaPhi <- post_PFA(fit)
 # fields::image.plot(t(lambdap))
