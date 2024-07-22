@@ -41,27 +41,27 @@ est_perform <- function(true_data, result_all){
   result_SUFA <- result_all$result_SUFA
   # Scale MOMSS's M
   MOMSS_Phi <- result_MOMSS$M
-  # MOMSS
+  #------------ MOMSS --------------
   RV_MOMSS_Phi <- MatrixCorrelation::RV(MOMSS_Phi, true_data$Phi)
   #FN_MOMSS_Phi <- frobenius.norm(tcrossprod(MOMSS_Phi) - tcrossprod(true_data$Phi))
   RV_MOMSS_SigmaPhi <- MatrixCorrelation::RV(tcrossprod(MOMSS_Phi), 
                                              tcrossprod(true_data$Phi))
   MSE_MOMSS <- gen_MOMSS_MSE(true_data, result_MOMSS)
   
-  # BMSFA
+  #------------ BMSFA --------------
   RV_BMSFA_Phi <- MatrixCorrelation::RV(result_BMSFA$est_Phi, true_data$Phi)
   #FN_BMSFA_Phi <- frobenius.norm(tcrossprod(result_BMSFA$est_Phi) - tcrossprod(true_data$Phi))
   RV_BMSFA_SigmaPhi <- MatrixCorrelation::RV(tcrossprod(result_BMSFA$est_Phi), 
                                              tcrossprod(true_data$Phi))
   MSE_BMSFA <- gen_BMSFA_MSE(true_data, result_BMSFA)
   
-  # PFA
+  #------------- PFA ---------------
   RV_PFA_Phi <- MatrixCorrelation::RV(result_PFA$est_Phi, true_data$Phi)
   RV_PFA_SigmaPhi <- MatrixCorrelation::RV(result_PFA$est_SigmaPhi, 
                                            tcrossprod(true_data$Phi))
   
   
-  # SUFA
+  #------------- SUFA ---------------
   RV_SUFA_Phi <- MatrixCorrelation::RV(result_SUFA$est_Phi, true_data$Phi)
   #FN_SUFA_Phi <- frobenius.norm(tcrossprod(result_SUFA$est_Phi) - tcrossprod(true_data$Phi))
   RV_SUFA_SigmaPhi <- MatrixCorrelation::RV(result_SUFA$est_SigmaPhi, 
