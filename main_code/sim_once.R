@@ -20,7 +20,13 @@ fitting <- function(sim_data){
   Y_list <- sim_data$Y_list
   n_s <- sim_data$n_s
   set_K <- 5
-  
+
+   profile_SUFA <- peakRAM({
+    #Fit the SUFA model
+    fit_SUFA <- SUFA::fit_SUFA(Y_list, qmax = set_K, nthreads = 5, nrun = 5000,
+                            nleapfrog = 4, leapmax = 9, del_range = c(0, .01))
+  })
+
   profile_PFA <- peakRAM({
     # #   #Fit the PFA model
     fit_PFA <- PFA(Y=t(Y_mat), 
@@ -40,11 +46,6 @@ fitting <- function(sim_data){
                                       b = A, q = set_K, scaling = FALSE)
   })
   
-  profile_SUFA <- peakRAM({
-    #Fit the SUFA model
-    fit_SUFA <- fit_SUFA(Y_list, qmax = set_K, nthreads = 5, nrun = 5000,
-                            nleapfrog = 4, leapmax = 9, del_range = c(0, .01))
-  })
   return(list(result_MOMSS = fit_MOMSS, result_BMSFA = post_BMSFA(fit_BMSFA),
               result_PFA = post_PFA(fit_PFA),
               result_SUFA = post_SUFA(fit_SUFA),
@@ -55,15 +56,15 @@ fitting <- function(sim_data){
 }
 
 ################################# Example ###########################
-# set.seed(6)
-# sim_data_test <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5)
-# result_test <- fitting(sim_data_test)
+set.seed(6)
+sim_data_test <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5)
+result_test <- fitting(sim_data_test)
 # # # 
 # gen_MOMSS_MSE(sim_data_test, result_test$result_MOMSS)
 # # # 
 # gen_BMSFA_MSE(sim_data_test, result_test$result_BMSFA)
 # # # 
-# est_perform(sim_data_test, result_test)
+est_perform(sim_data_test, result_test)
 # computing_perform(result_test[c("profile_MOMSS", "profile_BMSFA", "profile_PFA", "profile_SUFA")])
 # fit <- PFA(t(sim_data_test$Y_mat), grpind = rep(1:length(sim_data_test$n_s), times = sim_data_test$n_s), ini.PCA = T)
 # SigmaPhi <- post_PFA(fit)
