@@ -1,5 +1,10 @@
 install.packages("devtools") 
 library(devtools)
+
+#--------MOMSS-----------
+BiocManager::install("sparseMatrixStats")
+install.packages("mombf")
+
 devtools::install_github("AleAviP/BFR.BE")
 library(BFR.BE)
 
