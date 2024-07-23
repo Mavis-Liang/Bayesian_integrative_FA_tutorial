@@ -60,7 +60,6 @@ est_perform <- function(true_data, result_all){
   RV_PFA_SigmaPhi <- MatrixCorrelation::RV(result_PFA$est_SigmaPhi, 
                                            tcrossprod(true_data$Phi))
   
-  
   #------------- SUFA ---------------
   RV_SUFA_Phi <- MatrixCorrelation::RV(result_SUFA$est_Phi, true_data$Phi)
   #FN_SUFA_Phi <- frobenius.norm(tcrossprod(result_SUFA$est_Phi) - tcrossprod(true_data$Phi))
