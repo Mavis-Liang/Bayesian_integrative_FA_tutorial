@@ -41,7 +41,7 @@ saveRDS(sen1_dense, "./sen1_dense.rds")
 stopImplicitCluster()
 ###############################################################################
 
-##########################Senerio 1 Sparse Phi#################################
+#########################Senerio 1 Sparse Phi#################################
 # registerDoParallel(cl)
 # sen1_sparse <- foreach(i = 1:50, .combine = 'rbind', 
 #                       .packages = packages) %dopar% {
@@ -60,5 +60,6 @@ stopImplicitCluster()
 # # Stop the parallel backend after the job is done
 # stopImplicitCluster()
 ###############################################################################
+
 
 
