@@ -1,6 +1,7 @@
 library(Matrix)
 library(MASS)
 library(matlab)
+library(mvtnorm)
 
 # gen data with known covariates, and without study-specific factors
 gen_senerioSS <- function(S, N, P, Q, K, genPhi = "dense"){
