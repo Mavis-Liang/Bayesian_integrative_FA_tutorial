@@ -13,15 +13,7 @@ source("./functions/post_PFA.R")
 source("./functions/measurements.R")
 source("./functions/post_SUFA.R")
 source("./main_code/sim_once.R")
-
-
-# Detect the number of cores
-numCores <- parallel::detectCores()
-
-# Register the parallel backend
-cl <- makeCluster(numCores - 3)
-registerDoParallel(cl)
-
+registerDoParallel(10)
 ###############################Senerio 1 Dense Phi##############################
 sen1_dense <- foreach(i = 1:50, .combine = 'rbind',
                       # "QiupC" is cpp function sourced in PFA.R, and should be import separately.

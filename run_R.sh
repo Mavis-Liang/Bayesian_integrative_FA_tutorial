@@ -7,4 +7,4 @@
 run_R.sh
 
 module load r/4.4.0-yycctsj
-Rscript ./main_code/sim_once.R 
+Rscript ./main_code/multicore.R 
