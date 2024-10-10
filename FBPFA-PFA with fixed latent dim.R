@@ -37,7 +37,7 @@ library(RcppArmadillo)
 #' @export
 #' @examples
 #Rcpp::sourceCpp('PFA.cpp')
-PFA <- function(Y=Y, d = 100, latentdim = NULL, grpind = NULL, measureerror = F, FB=T, alph= 0.0001,  ini.PCA=T, Cutoff = 0, no.core = 1, Thin= 10, burn = 10, Total_itr = 5000){
+PFA <- function(Y=Y, d = 100, latentdim = NULL, grpind = NULL, measureerror = F, FB=T, alph= 0.0001,  ini.PCA=T, Cutoff = 0, no.core = 1, Thin= 10, burn = 5000, Total_itr = 15000){
   QYpr <- function(i, mat = Y, vec = grpind, Ql = Qlist){
     temp <- matrix(Ql[, vec[i]], p, p)
     return(temp%*%mat[, i])
@@ -174,7 +174,7 @@ PFA <- function(Y=Y, d = 100, latentdim = NULL, grpind = NULL, measureerror = F,
     
     var.pm <- ginv(crossprod(lambda / sigma1) + diag(1 / sigma2^2/sigeta^2))
     
-    Ivarpmei <- eigen(crossprod(lambda / sigma1) + diag(1 / sigma2^2))
+    Ivarpmei <- eigen(crossprod(lambda / sigma1) + diag(1 / sigma2^2/sigeta^2))
     Ueig     <- Ivarpmei$vectors
     Deig     <- abs(Ivarpmei$values) + 1e-8
     

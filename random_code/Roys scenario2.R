@@ -52,6 +52,7 @@ Y <- parallel::mcmapply(1:n, FUN = QYpr, MoreArgs = list(mat=Y)) #matrix(Q %*% a
 fit_PFA_senPFA <- PFA(Y=Y, 
                       latentdim = 50,
                       grpind = rep(1:10, times = 50))
+saveRDS(fit_PFA_senPFA, "./RDS/fit_PFA_Roy2.rds")
 
 ############## Results ################
 # True common covariance
