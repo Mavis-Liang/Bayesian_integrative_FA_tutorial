@@ -4,7 +4,7 @@ post_Tetris <- function(fit){
   A <- fit$A[[1]]
   Lambda <- getLambda(fit,A)
   S <- dim(A)[1]
-  est_Phi <- Lambda[,colSums(A)==S]
+  est_Phi <- as.matrix(Lambda[,colSums(A)==S])
   est_SigmaPhi <- tcrossprod(est_Phi)
   # Estimated study-specific covariance
   A_common = diag((colSums(A) == S)*1)
@@ -28,5 +28,4 @@ post_Tetris <- function(fit){
               LambdaList = est_LambdaList, SigmaLambdaList = est_SigmaLambdaList,
               SigmaMarginal = est_SigmaMarginal))
 }
-
 
