@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 post_stackFA <- function(fit, S){
   est_Phi <- MSFA::sp_OP(fit$Lambda, trace=FALSE)$Phi
   est_SigmaPhi <- tcrossprod(est_Phi)
@@ -11,4 +12,3 @@ post_stackFA <- function(fit, S){
   est_Psi <- Reduce('+', Psi_chain)/length(Psi_chain)
   return(list(Phi = est_Phi, SigmaPhi = est_SigmaPhi, Psi = est_Psi,
               SigmaMarginal = est_SigmaMarginal))
-}

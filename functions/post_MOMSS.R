@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 post_MOMSS <- function(fit, version = 1){
   est_Phi <- fit$M
   if (version==2){est_Phi <- fit$Mpost}
@@ -18,4 +19,5 @@ post_MOMSS <- function(fit, version = 1){
   return(list(Phi = est_Phi, SigmaPhi = est_SigmaPhi, Psi = est_PsiList, alpha = est_alphas, B = est_B,
               SigmaMarginal = est_SigmaMarginal))
 }
+
 

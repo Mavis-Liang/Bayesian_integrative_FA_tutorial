@@ -1,5 +1,6 @@
 #!/bin/bash
 
+<<<<<<< HEAD
 #SBATCH -n 1
 #SBATCH -c 1
 #SBATCH --mem=1G
@@ -26,3 +27,4 @@ Rscript -e "source('./functions/gen_scenario2.R'); \
             peakRAM::peakRAM({
                 fit_Tetris_fixT <- run_Tetris(true_data, big_T=true_data$big_T)})"
             
+

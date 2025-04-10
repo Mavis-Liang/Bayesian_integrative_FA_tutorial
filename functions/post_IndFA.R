@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 post_IndFA <- function(fit_list){
   # Estimated study-specific covariance and loading
   S <- length(fit_list)
@@ -24,3 +25,4 @@ post_IndFA <- function(fit_list){
   return(list(LambdaList = est_LambdaList, SigmaLambdaList = est_SigmaLambdaList, Psi = Psi,
               SigmaMarginal = est_SigmaMarginal))
 }
+

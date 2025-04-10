@@ -1,9 +1,10 @@
+<<<<<<< HEAD
 library(Matrix)
 library(MASS)
 library(matlab)
 library(mvtnorm)
 library(tidyverse)
-
+# This is scenario 2 in the manuscript (simulation based on MOM-SS)
 # gen data with known covariates, and without study-specific factors
 gen_scenario1 <- function(S, N_s, P, Q, K, genPhi = "sparse"){
   # Number of total observations
@@ -67,4 +68,3 @@ gen_scenario1 <- function(S, N_s, P, Q, K, genPhi = "sparse"){
               SigmaMarginal=SigmaMarginal,
               Psi_list=Psi_list, Psi_mat=Psi_mat))
 }
-

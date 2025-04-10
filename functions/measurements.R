@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 source("./functions/RV_pd.R")
 library(tidyverse)
 measure_common <- function(sim_data, post_output){
