@@ -202,3 +202,8 @@ metrics_tables <- function(post_fit_list, sim_data){
               specific = specific_metrics_df, 
               marginal = marginal_metrics_df))
 }
+
+
+
+
+
