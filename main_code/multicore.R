@@ -1,65 +1,34 @@
+packages <- c('BFR.BE', 'MSFA',"SUFA", 'peakRAM', 'tidyverse', 'matlab', 
+              'MatrixCorrelation',"Rcpp")
+lapply(packages, library, character.only = TRUE)
 library(foreach)
 library(doParallel)
 library(iterators)
 library(peakRAM)
 library(devtools)
-packages <- c('MSFA', 'peakRAM', 'BFR.BE', 'tidyverse', 'matlab', 'MatrixCorrelation',"Rcpp","SUFA")
-lapply(packages, library, character.only = TRUE)
-source("./functions/gen_senerioSS.R")
-source("./functions/gen_senerioBMSFA.R")
-source("./functions/calculateRV.R")
-source("./functions/post_BMSFA.R")
-source("./functions/post_PFA.R")
-source("./functions/measurements.R")
-source("./functions/post_SUFA.R")
-source("./main_code/sim_once.R")
 
-registerDoParallel(10)
+# Running scenario 1 ~ 3 50 times in parallel. Tetris excluded (runned separatly in sim_Tetris.R file).
+scenario <- 3
+source(paste0("./main_code/sim_scenario", scenario, ".R"))
 
-###############################Senerio 1 Dense Phi##############################
-sen1_dense <- foreach(i = 1:50, .combine = 'rbind',
-                      # "QiupC" is cpp function sourced in PFA.R, and should be import separately.
-                   .packages = packages, .noexport = c("QiupC")) %dopar% {
-                     
-                     # Source necessary R scripts
-                     source("./FBPFA-PFA.R") ## It's neccessary because it seems the "FBPFA-PFA with fixed latent dim.R" depends on this.
-                     source("./FBPFA-PFA with fixed latent dim.R")
-                                   data_sen1 <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5)
-                                   results <- fitting(data_sen1)
+registerDoParallel(50)
 
-                                   # RV and FN for Phi
-                                    metrices <- est_perform(data_sen1, results)
-                                   # Computing performance
-                                    comp_metrices <- computing_perform(results[c("profile_MOMSS", "profile_BMSFA", 
-                                                                                 "profile_PFA", "profile_SUFA")])
-
-                                   # Output
-                                   c(metrices, comp_metrices)
-                                 }
-saveRDS(sen1_dense, "./sen1_dense.rds")
-# Stop the parallel backend after the job is done
+multicore_result <- foreach(i = 1:50, .errorhandling = "pass",
+               .packages = packages, .noexport = c("QiupC"# "QiupC" is cpp function sourced in PFA.R, and should be import separately.
+               )) %dopar% {
+                 
+                 # Source necessary R scripts
+                 source("./FBPFA-PFA.R") ## It's neccessary because it seems the "FBPFA-PFA with fixed latent dim.R" depends on this.
+                 source("./FBPFA-PFA with fixed latent dim.R")
+                 source("./Tetris.R")
+                 curr <- case_when(
+                   scenario == 1 ~ sim_scenario1(seed = i*3),
+                   scenario == 2 ~ sim_scenario2(seed = i*3),
+                   scenario == 3 ~ sim_scenario3(seed = i*3),
+                 )
+                 saveRDS(curr, paste0("./RDS/sc", scenario, "/sc", scenario, "_", i, ".rds"))
+                 return(curr)
+               }
 stopImplicitCluster()
-###############################################################################
-
-#########################Senerio 1 Sparse Phi#################################
-# registerDoParallel(cl)
-# sen1_sparse <- foreach(i = 1:50, .combine = 'rbind', 
-#                       .packages = packages) %dopar% {
-#                                       data_sen1 <- gen_senerioSS(S=4, N=500, P=50, Q=2, K=5, genPhi = "sparse")
-#                                       results <- fitting(data_sen1)
-#                                       
-#                                       # RV and FN for Phi
-#                                       metrices <- est_perform(data_sen1, results$result_BMSFA, results$result_MOMSS, results$result_PFA)
-#                                       # Computing performance
-#                                       comp_metrices <- computing_perform(results[c("profile_MOMSS", "profile_BMSFA", "profile_PFA")])
-#                                       
-#                                       # Output
-#                                       c(metrices, comp_metrices)
-#                                     }
-# saveRDS(sen1_sparse, "./sen1_sparse.rds")
-# # Stop the parallel backend after the job is done
-# stopImplicitCluster()
-###############################################################################
-
-
-
+saveRDS(multicore_result, "./RDS/sc3_multicore_noTetris.rds")
+############################################################################################
