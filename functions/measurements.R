@@ -179,16 +179,26 @@ measure_marginal <- function(sim_data, post_output){
               RV2_SigmaMarginal_mean = RV2_SigmaMarginal_mean))
 }
 
-computing_perform <- function(profiles_list){
-  output <- list()
-  
-  for (i in seq_along(profiles_list)) {
-    profile <- profiles_list[[i]]
-    name <- names(profiles_list)[i]
-    
-    output[[paste0("run_time_", name)]] <- profile[,'Elapsed_Time_sec']
-    output[[paste0("peak_RAM_", name)]] <- profile[,'Peak_RAM_Used_MiB']
-  }
-  
-  return(output)
+
+# Organize the metrics into tables
+metrics_tables <- function(post_fit_list, sim_data){
+  # Common metrics
+  common_metrics <- lapply(post_fit_list, 
+                           function(post) measure_common(sim_data = sim_data, 
+                                                           post_output = post))
+  # Specific metrics
+  specific_metrics <- lapply(post_fit_list, 
+                             function(post) measure_specific(sim_data = sim_data, 
+                                                             post_output = post))
+  # Marginal metrics
+  marginal_metrics <- lapply(post_fit_list, 
+                             function(post) measure_marginal(sim_data = sim_data, 
+                                                             post_output = post))
+  # Combine results
+  common_metrics_df <- do.call(cbind, common_metrics)
+  specific_metrics_df <- do.call(cbind, specific_metrics)
+  marginal_metrics_df <- do.call(cbind, marginal_metrics)
+  return(list(common = common_metrics_df, 
+              specific = specific_metrics_df, 
+              marginal = marginal_metrics_df))
 }
