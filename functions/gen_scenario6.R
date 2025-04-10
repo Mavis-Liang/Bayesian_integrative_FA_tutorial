@@ -2,8 +2,9 @@ library(Matrix) # for bdiag function
 library(MASS) # for mvrnorm function
 library(matlab)# for zeros function
 library(tidyverse) # for %>% operator
-# gen data with known covariates, and without study-specific factors
-gen_scenario2 <- function(S, N_s, P, K, J_s, 
+
+# [Scenario 3 in the manuscript][Based on SUFA]
+gen_scenario6 <- function(S, N_s, P, K, J_s, 
                              genPhi = "sparse", sparsity = 0.4){
   # Total number of observations
   N <- sum(N_s)
@@ -46,21 +47,15 @@ gen_scenario2 <- function(S, N_s, P, K, J_s,
     Phi <- matrix(Phi_long, P, K)
   }
 
-  # study-specific variables and parameters
-  Lambda_list <- M_list <- Psi_list <- Y_list <- Sigma_list <- SigmaLambda_list<-  list()
-  for(s in 1:S){
-      Lam <- as.vector(zeros(P, J_s[s]))
-      notZERO_count <- P * J_s[s] * (1 - sparsity)
-      notZERO_value <- runif(notZERO_count, 0.6, 1)
-      sign <- sample(x = length(notZERO_value), 
-                     size = (length(notZERO_value) / 2))# Randomly assign negative sign
-      notZERO_value[sign] <- notZERO_value[sign] * (-1)
-      position_notZERO <- sample(x = J_s[s] * P, 
-                                     size = length(notZERO_value))
-      Lam[position_notZERO] <- notZERO_value
-      Lambda_list[[s]] <- matrix(Lam, P, J_s[s])
+  Psi <- diag(runif(P, 0, 1), P)
 
-    Psi_list[[s]] <- diag(runif(P, 0, 1), P)
+  # study-specific variables and parameters
+  Lambda_list <- M_list  <- A_s_list <- Psi_list <- Y_list <- Sigma_list <- SigmaLambda_list<-  list()
+  for(s in 1:S){
+    A_s_list[[s]] <- matrix (rnorm(K*J_s[s],sd=0.4),  nrow=K,ncol=J_s[s])
+    Lambda_list[[s]] <- Phi %*% A_s_list[[s]]
+
+    Psi_list[[s]] <- Psi
     # Covariance for the marginal distribution of Y
     SigmaLambda_list[[s]] <- tcrossprod(Lambda_list[[s]])
     Sigma_list[[s]] <- tcrossprod(Phi)  + SigmaLambda_list[[s]]  + Psi_list[[s]]
@@ -82,25 +77,10 @@ gen_scenario2 <- function(S, N_s, P, K, J_s,
       T_mat[s, (K + sum(J_s[1:s-1]) + 1) :  (K + sum(J_s[1:s-1]) + J_s[s])] <- 1
   }
   return(list(Y_mat=Y_mat, Y_list=Y_list, N_s=N_s, M=M, 
-              Phi=Phi, SigmaPhi = tcrossprod(Phi), 
+              Phi=Phi, SigmaPhi = tcrossprod(Phi) + Psi, ## Use the definition in SUFA!
               LambdaList=Lambda_list,
               SigmaLambdaList = SigmaLambda_list,
               SigmaMarginal = Sigma_list,
               Psi_list=Psi_list, 
               Psi_mat=Psi_mat, big_T=T_mat))
 }
-
-# d <- gen_scenario2(4, N_s=c(35, 35, 35, 35), P=100, K=6, J_s=c(2, 1, 1, 1))
-# plot_single(d$Phi) + ggtitle(TeX("$\\Phi$")) 
-# grid.arrange(plot_single(d$LambdaList[[1]])+ ggtitle(TeX("$\\Lambda_1$"))+ theme(legend.position = "none"),
-#              plot_single(d$LambdaList[[2]])+ ggtitle(TeX("$\\Lambda_2$"))+ theme(legend.position = "none"),
-#              plot_single(d$LambdaList[[3]])+ ggtitle(TeX("$\\Lambda_3$"))+ theme(legend.position = "none"),
-#              plot_single(d$LambdaList[[4]])+ ggtitle(TeX("$\\Lambda_4$"))+ theme(legend.position = "none"),
-#              nrow = 1)
-# grid.arrange(plot_single(d$Psi_list[[1]]) + ggtitle(TeX("$\\Psi_1$"))+ theme(legend.position = "none", axis.text.x  = element_blank(), axis.text.y  = element_blank()),
-#              plot_single(d$Psi_list[[2]]) + ggtitle(TeX("$\\Psi_2$"))+ theme(legend.position = "none", axis.text.x  = element_blank(), axis.text.y  = element_blank()),
-#              plot_single(d$Psi_list[[3]]) + ggtitle(TeX("$\\Psi_3$"))+ theme(legend.position = "none", axis.text.x  = element_blank(), axis.text.y  = element_blank()),
-#              plot_single(d$Psi_list[[4]]) + ggtitle(TeX("$\\Psi_4$"))+ theme(legend.position = "none", axis.text.x  = element_blank(), axis.text.y  = element_blank()),
-#              nrow = 2)
-# plot_single(d$SigmaPhi) + ggtitle(TeX("$\\Sigma_{\\Phi}$")) + theme(axis.text.x  = element_blank())
-
