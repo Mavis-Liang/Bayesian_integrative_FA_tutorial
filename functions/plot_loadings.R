@@ -7,6 +7,10 @@ library(patchwork)
 
 # This function plots the heatmaps for the loading matrices (both common and 
 # study-specific) of all the fitted models and the true model, within a single plot.
+all_methods <- c("stackFA", "IndFA", "PFA", "MOMSS", "SUFA_fixJs", 
+                 "SUFA", "BMSFA", "Tetris_fixT", "Tetris")
+method_lab <- c("True", "Stack FA", "Ind FA", "PFA", "MOM-SS", "SUFA_fixJs", "SUFA", 
+                "BMSFA", "Tetris_fixT", "Tetris")
 
 # Main function for plotting the loading matrices
 plot_loadings <- function(fitted_lists, sim_data) {
@@ -16,10 +20,12 @@ plot_loadings <- function(fitted_lists, sim_data) {
   
   # Convert the Lambda and Method factors to use LaTeX in facet titles
   phi_data$Lambda <- factor(phi_data$Lambda, labels = c(TeX("$\\Phi$")))
-  lambda_data$Lambda <- factor(lambda_data$Lambda, labels = sapply(unique(lambda_data$Lambda), function(i) TeX(paste0("$\\Lambda_", gsub("Lambda_", "", i), "$"))))
+  lambda_data$Lambda <- factor(lambda_data$Lambda, 
+                               labels = sapply(1:length(sim_data$SigmaMarginal), 
+                                               function(i) TeX(paste0("$\\Lambda_{", i, "}$"))))
   
-  phi_data$Method <- factor(phi_data$Method, levels = c("True", names(fitted_lists)))
-  lambda_data$Method <- factor(lambda_data$Method, levels = c("True", names(fitted_lists)))
+  phi_data$Method <- factor(phi_data$Method, levels = c("True", all_methods))
+  lambda_data$Method <- factor(lambda_data$Method, levels = c("True", all_methods))
   
   # Plot for Phi matrices
   # Determine the range of the data
@@ -31,14 +37,16 @@ plot_loadings <- function(fitted_lists, sim_data) {
     geom_tile() +
     facet_grid(Lambda ~ Method, labeller = label_parsed, switch = "y") +
     scale_x_continuous(breaks = x_breaks) +
-    scale_y_reverse(breaks = seq(min(phi_data$Var1, na.rm = TRUE), max(phi_data$Var1, na.rm = TRUE), by = 1), labels = NULL) +
+    scale_y_reverse(breaks = seq(min(phi_data$Var1, na.rm = TRUE), max(phi_data$Var1, na.rm = TRUE), by = 1), 
+                    labels = NULL) +
     theme_minimal() +
     theme(strip.text.y.left = element_text(angle = 0, size = 12, margin = margin(r = 8, l = 10)),
           axis.ticks.y = element_blank(),
           axis.title = element_blank(),  # Remove axis titles
           plot.margin = margin(t = 5, r = 5, b = 5, l = 5),
           plot.title = element_text(hjust = 0.5)) +  # Center title
-    scale_fill_gradient2(low = "navy", mid = "white", high = "darkgoldenrod1", midpoint = 0, na.value = "grey80", name = TeX("$\\phi$\\ values")) +
+    scale_fill_gradient2(low = "#a1d76a", mid = "#f7f7f7", high = "#e9a3c9", midpoint = 0, 
+                         na.value = "grey50", name = TeX("$\\phi$\\ values")) +
     guides(fill = guide_colorbar(barwidth = 0.5, barheight = 4))+
     ggtitle("Common Loading matrix")
   
@@ -54,13 +62,15 @@ plot_loadings <- function(fitted_lists, sim_data) {
     geom_tile() +
     facet_grid(Lambda ~ Method, labeller = label_parsed, switch = "y") +
     scale_x_continuous(breaks = x_breaks) +
-    scale_y_reverse(breaks = seq(min(lambda_data$Var1, na.rm = TRUE), max(lambda_data$Var1, na.rm = TRUE), by = 1), labels = NULL) +
+    scale_y_reverse(breaks = seq(min(lambda_data$Var1, na.rm = TRUE), max(lambda_data$Var1, na.rm = TRUE), by = 1), 
+                    labels = NULL) +
     theme_minimal() +
     theme(strip.text.y.left = element_text(angle = 0, size = 12, margin = margin(r = 8, l = 10)),
           axis.ticks.y = element_blank(),
           axis.title = element_blank(),
           plot.title = element_text(hjust = 0.5)) +  # Center title
-    scale_fill_gradient2(low = "darkslateblue", mid = "white", high = "chocolate", midpoint = 0, na.value = "grey80", name = TeX("$\\lambda$\\ values")) +
+    scale_fill_gradient2(low = "#998ec3", mid = "#f7f7f7", high = "#f1a340", 
+                         midpoint = 0, na.value = "grey50", name = TeX("$\\lambda$\\ values")) +
     guides(fill = guide_colorbar(barwidth = 0.5, barheight = 4))+
     ggtitle("Study-specific Loading matrix")
   
@@ -82,7 +92,7 @@ arrange_Phi <- function(fitted_lists, sim_data) {
   }), na.rm = TRUE)
   
   # Prepare the Phi data for true and fitted methods
-  phi_melted_list <- lapply(c("True", names(fitted_lists)), function(method) {
+  phi_melted_list <- lapply(c("True", all_methods), function(method) {
     if (method == "True") {
       Phi_matrix <- sim_data$Phi
     } else if (!is.null(fitted_lists[[method]]$Phi)) {
@@ -138,7 +148,7 @@ arrange_Lambda <- function(fitted_lists, sim_data) {
   true_melted <- do.call(rbind, true_melted)
   
   # Prepare the fitted data for all methods
-  fitted_melted_list <- lapply(names(fitted_lists), function(method) {
+  fitted_melted_list <- lapply(all_methods, function(method) {
     if (!is.null(fitted_lists[[method]]$LambdaList)) {
       LambdaList <- fitted_lists[[method]]$LambdaList
     } else {
