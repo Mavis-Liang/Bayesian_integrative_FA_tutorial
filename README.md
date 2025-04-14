@@ -28,8 +28,8 @@ Important files including:
 
 - RDS
 
-  Results are stored as RDS files. To read the files in R, use `readRDS("file_path.filename.rds")`. Within each RDS, we can see a list containing the true generated data (if this is the results of simulations); estimated loadings and covariances of each method; the metrics (RV and FN).
+  - Results are stored as RDS files. To read the files in R, use `readRDS("file_path.filename.rds")`. Within each RDS, we can see a list containing the true generated data (if this is the results of simulations); estimated loadings and covariances of each method; the metrics (RV and FN).
 
 - Figs
 
-  heatmaps, networks plots, etc.
+  - heatmaps, networks plots, etc.
