@@ -9,17 +9,6 @@ fun_eigen <- function(Sig_mean) {
   return(choose_K)
 }
 
-# num of factors for PFA
-# columns have all loadings less than 10^-3
-fun_neibour <- function(Phi, threshold = 1e-3) {
-  return(
-  sum(apply(Phi, 2, function(x) {
-    # if this column has all loadings less than threshold
-    sum(abs(x) <= threshold) < length(x)}
-  ))
-  )
-}
-
 # numbers of factors for MOM-SS (MOMSS has already post-processed for the number of factors)
 count_col <- function(Phi){
   return(ncol(Phi))
@@ -36,10 +25,8 @@ count_f <- function(point_est_list, models){
   colnames(df) <- models
   for (model in models){
     if (model == "BMSFA" |  model == "stackFA"){
-      num_f <- fun_eigen(point_est_list[[model]]$SigmaPhi)
-    } else if (model == "PFA"){
-      num_f <- fun_neibour(point_est_list[[model]]$Phi)
-    }  else if (model == "MOMSS" | model == "SUFA" | model == "Tetris"){
+      num_f <- fun_eigen(point_est_list[[model]]$SigmaPhi) }
+      else if (model == "MOMSS" | model == "SUFA" | model == "Tetris" | model== "PFA"){
       num_f <- count_col(point_est_list[[model]]$Phi)
     }
     
@@ -62,7 +49,6 @@ for (i in 1:50){
 
 # scenario 3
 # For seed=1-50
-sc3_mis_1 <- readRDS("./RDS/sc3_mis/sc3_mis_1.rds")
 models_sc3 <- c("stackFA","PFA", "MOMSS", "SUFA", "BMSFA", "Tetris")
 df_sc3 <- NULL
 for (i in 1:50){
