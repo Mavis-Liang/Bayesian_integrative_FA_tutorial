@@ -92,18 +92,7 @@ Js_BMSFA <- lapply(SigmaLambda_BMSFA, fun_eigen)
 K_BMSFA
 Js_BMSFA
 
-# Numbers of factors - PFA
-# columns have all loadings less than 10^-3
-fun_neibour <- function(Phi, threshold = 1e-3) {
-  return(
-    sum(apply(Phi, 2, function(x) {
-      # if this column has all loadings less than threshold
-      sum(abs(x) <= threshold) < length(x)}
-    ))
-  )
-}
-Phi_PFA <- readRDS("./RDS/results_curated/RCuratedOvarian_PFA.rds")$Phi
-K_PFA <- fun_neibour(Phi_PFA)
+Phi_PFA <- readRDS("./RDS/results_curated/RCuratedOvarian_PFA_scaled.rds")$Phi
 K_PFA
 
 # Numbers of factors - SUFA
