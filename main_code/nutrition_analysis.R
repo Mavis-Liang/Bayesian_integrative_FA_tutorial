@@ -66,17 +66,7 @@ K_BMSFA
 Js_BMSFA
 
 # Numbers of factors - PFA
-# columns have all loadings less than 10^-3
-fun_neibour <- function(Phi, threshold = 1e-3) {
-  return(
-    sum(apply(Phi, 2, function(x) {
-      # if this column has all loadings less than threshold
-      sum(abs(x) <= threshold) < length(x)}
-    ))
-  )
-}
 Phi_PFA <- readRDS("./RDS/results_nutrition/Rnutrition_PFA.rds")$Phi
-K_PFA <- fun_neibour(Phi_PFA)
 K_PFA
 
 # ------------------------- Visualizations -------------------------
