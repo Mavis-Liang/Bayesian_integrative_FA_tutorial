@@ -103,12 +103,12 @@ supp_metrics <- c("FN_Phi", "FN_SigmaPhi", "RV_SigmaPhi", "FN_Lambda_mean",
 labels_main <- c(TeX("RV of $(\\Phi,\\widehat{\\Phi})$"), 
                           TeX("RV of $(\\Lambda_s, \\widehat{\\Lambda_s})$"), 
                           TeX("RV of $(\\Sigma_{s}, \\widehat{\\Sigma_{s}})$"), 
-                          TeX("Time (sec)"),
-                          TeX("RAM (MiB)"))
+                          "Time (sec)",
+                          "RAM (MiB)")
 labels_supp <- c(TeX(paste0("FN of ", "$(\\Phi, \\widehat{\\Phi})$")), 
                           TeX(paste0("FN of ", "$(\\Sigma_{\\Phi}, \\widehat{\\Sigma_{\\Phi}})$")), 
                           TeX(paste0("RV of ", "$(\\Sigma_{\\Phi}, \\widehat{\\Sigma_{\\Phi}})$")), 
-                          TeX(paste0("FN of ", "$(\\Lambda, \\widehat{\\Lambda})$")), 
+                          TeX(paste0("FN of ", "$(\\Lambda_s, \\widehat{\\Lambda_s})$")), 
                           TeX(paste0("FN of ", "$(\\Sigma_{\\Lambda_s}, \\widehat{\\Sigma_{\\Lambda_s}})$")), 
                           TeX(paste0("RV of ", "$(\\Sigma_{\\Lambda_s}, \\widehat{\\Sigma_{\\Lambda_s}})$")), 
                           TeX(paste0("FN of ", "$(\\Sigma_{s}, \\widehat{\\Sigma_{s}})$"))
@@ -141,8 +141,7 @@ df_1_supp <- merge(FN_Phi_sc1, FN_SigmaPhi_sc1) %>%
   pivot_longer(cols = -c(seed, method), names_to = "metric", values_to = "value") %>% 
   mutate(metric=factor(metric, levels = supp_metrics,
                        labels = labels_supp),
-         method = factor(method, levels = method_all)
-  )
+         method = factor(method, levels = method_all, labels = method_lab))
 df_1_eff <- merge(Time_sc1, RAM_sc1) %>% 
   pivot_longer(cols = -c(seed, method), names_to = "metric", values_to = "value") %>% 
   mutate(metric=factor(metric, levels = main_metrics,
@@ -172,7 +171,7 @@ sc1_settings <- data.frame(
   )
 ) %>%
   ggplot(aes(x = x, y = y)) +
-  geom_text(aes(label = text), parse = TRUE, size = 8/.pt) +
+  geom_text(aes(label = text), parse = TRUE, size = 10/.pt) +
   ylim(c(-0.1,1.1))  +
   theme_classic() +
   theme(
@@ -279,6 +278,17 @@ df_3_eff <- merge(Time, RAM) %>%
                        labels = labels_main),
          method = factor(method, levels = method_all, labels = method_lab))
 
+df_3_supp <- merge(FN_Phi, FN_SigmaPhi) %>%
+  merge(RV_SigmaPhi) %>%
+  merge(FN_Lambda) %>%
+  merge(FN_SigmaLambda_mean) %>%
+  merge(RV_SigmaLambda_mean) %>%
+  merge(FN_SigmaMarginal_mean) %>%
+  pivot_longer(cols = -c(seed, method), names_to = "metric", values_to = "value") %>% 
+  mutate(metric=factor(metric, levels = supp_metrics,
+                       labels = labels_supp),
+         method = factor(method, levels = method_all, labels = method_lab))
+
 sc3_settings <- data.frame(
   "x" = rep(0, 6),
   "y" = 5:0/5,
@@ -292,7 +302,7 @@ sc3_settings <- data.frame(
   )
 ) %>%
   ggplot(aes(x = x, y = y)) +
-  geom_text(aes(label = text), parse = TRUE, size = 8/.pt) +
+  geom_text(aes(label = text), parse = TRUE, size = 10/.pt) +
   ylim(c(-0.1,1.1))  +
   theme_classic() +
   theme(
@@ -345,11 +355,12 @@ df_4_supp <- merge(FN_Phi_sc4, FN_SigmaPhi_sc4) %>%
          method = factor(method, levels = method_all, labels = method_lab))
 
 sc4_settings <- data.frame(
-  "x" = rep(0, 6),
-  "y" = 5:0/5,
+  "x" = rep(0, 7),
+  "y" = 6:0/6,
   "text" = c(
     TeX("Scenario 4 (mimic nutrition)", output="character"),
-    TeX("Based on Tetris plus 12 knwon covariates", output="character"),
+    TeX("Based on Tetris", output="character"),
+    TeX("12 knwon covariates", output="character"),
     TeX("S = 12", output="character"),
     TeX("P = 42", output="character"),
     TeX("$ 373 <= N_s <= 3775$", output = "character"),
@@ -357,7 +368,7 @@ sc4_settings <- data.frame(
   )
 ) %>%
   ggplot(aes(x = x, y = y)) +
-  geom_text(aes(label = text), parse = TRUE, size = 8/.pt) +
+  geom_text(aes(label = text), parse = TRUE, size = 10/.pt) +
   ylim(c(-0.1,1.1))  +
   theme_classic() +
   theme(
@@ -421,7 +432,7 @@ sc6_settings <- data.frame(
   )
 ) %>%
   ggplot(aes(x = x, y = y)) +
-  geom_text(aes(label = text), parse = TRUE, size = 8/.pt) +
+  geom_text(aes(label = text), parse = TRUE, size = 10/.pt) +
   ylim(c(-0.1,1.1))  +
   theme_classic() +
   theme(
@@ -434,11 +445,12 @@ sc6_settings <- data.frame(
 
 
 ### ------------------------- Main plot - accuracy -------------------------
-acc_4 <-
-  df_4_acc %>% 
+acc_6 <-
+  df_6_acc %>% 
   ggplot(aes(x = method, y = value, colour = method)) +
   geom_boxplot() +
-  facet_wrap(~metric, scales = "free", nrow = 1, labeller = label_parsed) +
+  facet_wrap(~metric, nrow = 1, labeller = label_parsed) +
+  coord_cartesian(ylim = c(0, 1)) +
   theme_classic()+
   theme(panel.background = element_rect(fill = "white", color = NA),
         panel.grid.major = element_line(color = "grey95"),  # Keep major grid lines
@@ -455,8 +467,7 @@ acc_4 <-
     x = "",
     y = "Value",
     fill = "Method") +
-  scale_color_manual(values = method_colors) +  # Use consistent color mapping
-  guides(colour = guide_legend(override.aes = list(size = 0.5)))
+  scale_color_manual(values = method_colors)  # Use consistent color mapping
 
 layout_acc <- "
 ABBB
@@ -465,18 +476,19 @@ EFFF
 GHHH
 IJJJ
 "
-sc3_settings + acc_3 + 
+
+(sc3_settings + acc_3 + 
   sc1_settings + acc_1 + 
   sc6_settings + acc_6 +
   sc4_settings + acc_4 +
-  settings_sc5 + acc_5 +
+  settings_sc5 + acc_5) +
   plot_layout(design=layout_acc)
 
-ggplot2::ggsave("./Figs/box_acc.svg", width = 10, height = 13, units = "in", dpi = 300)
+ggplot2::ggsave("./Figs/box_acc_ylimFixed.pdf", width = 10, height = 14, units = "in", dpi = 300)
 
 
 ##------------------------------- Efficiency plots ---------------------------
-eff_4<- df_4_eff %>%
+eff_3<- df_3_eff %>%
   ggplot(aes(x = method, y = value, colour = method)) +
   geom_boxplot(outlier.size = 1) +
   facet_wrap(
@@ -486,10 +498,10 @@ eff_4<- df_4_eff %>%
     labeller = label_parsed,
     strip.position = "top"
   ) +
-  scale_y_continuous(
-    labels = scales::trans_format("identity", scales::math_format()),
-    breaks = scales::trans_breaks("identity", identity)
-  ) +
+  # scale_y_continuous(
+  #   labels = scales::trans_format("identity", scales::math_format()),
+  #   breaks = scales::trans_breaks("identity", identity)
+  # ) +
   theme_classic() +
   theme(
     panel.background = element_rect(fill = "white", color = NA),
@@ -504,14 +516,15 @@ eff_4<- df_4_eff %>%
     legend.text = element_text(size = 8),
     legend.title = element_text(size = 8)
   ) +
-  labs(title = "Scenario 4 (mimic nutrition)",
+  labs(title = "Scenario 1",
     x = "",
     y = "Value",
     fill = "Method", color = "Method"
   ) +
   scale_color_manual(values = method_colors) +
-  guides(colour = guide_legend(override.aes = list(size = 0.5))) +
-  scale_y_log10()
+  guides(colour = guide_legend(override.aes = list(size = 0.5))) 
+# +
+#   scale_y_log10()
 
 
 layout_eff <- "
@@ -521,18 +534,13 @@ CCFF
 "
 eff_3 + eff_1 + eff_6 + eff_4 + eff_5 + 
   plot_layout(design=layout_eff)
-ggplot2::ggsave("./Figs/box_eff_1212.svg", width = 10, height = 9, units = "in", dpi = 300)
+ggplot2::ggsave("./Figs/box_eff_originScale.pdf", width = 10, height = 9, units = "in", dpi = 300)
 
 legend_plot <- cowplot::get_legend(eff_6)
 
-
-# Study-specific loadings in PFA
-sc3_1 <- readRDS("RDS/sc3/sc3_1.rds")
-
-
 # ---------------------------Supplement plots --------------------------------
-supp_1 <- 
-  df_1_supp %>%
+supp_3 <- 
+  df_3_supp %>%
   ggplot(aes(x = method, y = value, colour = method)) +
   geom_boxplot() +
   facet_wrap(~metric, scales = "free", nrow = 1, labeller = label_parsed) +
@@ -542,7 +550,7 @@ supp_1 <-
         panel.grid.minor = element_blank(),  # Remove minor grid lines (optional)
         panel.border = element_rect(color = "black", fill = NA, size = 0.5),
         strip.background = element_rect(fill = "grey95", color = NA), 
-        axis.text.x = element_text(angle = 30, hjust = 1, size = 7),  # Rotate x-axis labels
+        axis.text.x = element_text(angle = 30, hjust = 1, size = 5),  # Rotate x-axis labels
         legend.position = "none",
         legend.key.size = unit(0.4, "cm"),  # Smaller legend keys
         legend.text = element_text(size = 8),  # Smaller legend text
@@ -553,4 +561,15 @@ supp_1 <-
        fill = "Method") +
   scale_color_manual(values = method_colors) +  # Use consistent color mapping
   guides(colour = guide_legend(override.aes = list(size = 0.5)))
+
+layout_supp <- "
+A
+B
+C
+D
+E
+"
+supp_3 + supp_1 + supp_6 + supp_4 + supp_5 + 
+  plot_layout(design=layout_supp)
+ggplot2::ggsave("./Figs/box_supp.pdf", width = 11, height = 12, units = "in", dpi = 300)
 
