@@ -16,7 +16,7 @@ Important files including:
   - `installation.r`: how each package is installed.
   - `sim_scenarioXX.r`: the code to run each model to each senarios, Tetris exlucded. Exucution of post-processing (with `post_xxxx.r` in the `function` folder) and calculation of RV/FN also included. Scenario 1 is based on MOM-SS (corresponding to the Scenario 2 in the manuscript); Scenario 2 is based on BMSFA; Scenario 3 is based on PFA (corresponding to the Scenario 1 in the manuscript); Scenario 4 mimics nutrition data based on Tetris (corresponding to the Scenario 4 in the manuscript); Scenario 5 mimics gene expression data based on Tetris (corresponding to the Scenario 5 in the manuscript); Scenario 6 is based on SUFA (corresponding to the Scenario 3 in the manuscript).
   - `sim_Tetris.r`: runs Tetris. Because Tetris takes far more time to run, we run it alone every time.
-  - `plot_box.r` and `tab_NumFactor.R`: the code that generates the box plots and table for numbers of factors to display the simulation results shown in the manuscript.
+  - `plot_box.r` and `tab_NumFactor.R`: the code that generates the box plots and table for numbers of factors to display the simulation results shown in the manuscript. `plot_sc5.r` makes figures for Scenario 5---results of this scenario is stored differently (each method has an individual RDS) because results, and therefore, different operation is needed to plot.
   - `run_nutrition.r` and `run_curatedData.r`: fit the each models to the real nutrition and gene-expression data.
   - `nutrition_analysis.R` and `CuratedOvarian_analysis.R`: pre-processing and post-processing (determining numbers of factors, calculating MSE, visualizations) for the real-data applications.
 
