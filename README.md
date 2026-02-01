@@ -2,9 +2,9 @@
 
 Paper: TBD
 
-User-friendly e-book available: [https://mavis-liang.github.io/Bayesian_integrative_FA_tutorial/](https://mavis-liang.github.io/Bayesian_integrative_FA_tutorial_book/)
+R package "bifaToolkits" available: [https://github.com/Mavis-Liang/bmfaToolkits/tree/main](https://mavis-liang.github.io/bmfaToolkits/).
 
-R package "bifaToolkits" available: https://github.com/Mavis-Liang/bifaToolkits/tree/main.
+Archived e-book with post-processing steps transparent: [https://mavis-liang.github.io/Bayesian_integrative_FA_tutorial/](https://mavis-liang.github.io/Bayesian_integrative_FA_tutorial_book/)
 
 This repository contains the raw code for simulations and applications. There are also some results uploaded. Note that the nutrition data is not publicly available.
 
